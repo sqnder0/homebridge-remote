@@ -1,0 +1,27 @@
+name: HomebridgeRemote
+options:
+  bundleIdPrefix: dev.sqnder
+  deploymentTarget:
+    iOS: "17.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+targets:
+  HomebridgeRemote:
+    type: application
+    platform: iOS
+    sources: [HomebridgeRemote]
+    info:
+      path: HomebridgeRemote/Info.plist
+      properties:
+        CFBundleDisplayName: Homebridge Remote
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        NSLocalNetworkUsageDescription: Connects to your Homebridge server.
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.sqnder.HomebridgeRemote
+        GENERATE_INFOPLIST_FILE: NO
+        TARGETED_DEVICE_FAMILY: "1"
