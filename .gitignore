@@ -11,3 +11,4 @@ watch/secrets/
 watch/bin/
 *.der
 *.pem
+__pycache__/
