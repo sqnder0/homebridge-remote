@@ -15,8 +15,12 @@ class AircoDelegate extends WatchUi.BehaviorDelegate {
     function onTap(evt as WatchUi.ClickEvent) as Boolean {
         var xy = evt.getCoordinates();
         var z = view.zone(xy[0], xy[1]);
-        if (z == :none) { return false; }
-        if (z == :power) {
+        if (z == :center) {
+            if (!model.isError) { return false; }
+            model.retry();
+        } else if (!model.loaded) {
+            return false;
+        } else if (z == :power) {
             model.togglePower();
         } else if (z == :minus) {
             model.adjust(-0.5);

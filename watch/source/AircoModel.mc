@@ -31,7 +31,8 @@ class AircoModel {
     var minT = 16.0;
     var maxT = 30.0;
     var loaded = false;
-    var status = "Loading";  // null when everything is fine
+    var status = "Connecting";  // null when everything is fine
+    var isError = false;
 
     hidden var token = null;
     hidden var ops = [];      // queue of requests, run one after another
@@ -42,6 +43,8 @@ class AircoModel {
     hidden var pollTimer = null;
     hidden var refreshTimer = null;
     hidden var tempTimer = null;
+    hidden var retryTimer = null;
+    hidden var retries = 0;
 
     function initialize() {
     }
@@ -51,6 +54,7 @@ class AircoModel {
         pollTimer.start(method(:refresh), 20000, true);
         refreshTimer = new Timer.Timer();
         tempTimer = new Timer.Timer();
+        retryTimer = new Timer.Timer();
         refresh();
     }
 
@@ -58,6 +62,31 @@ class AircoModel {
         if (pollTimer != null) { pollTimer.stop(); }
         if (refreshTimer != null) { refreshTimer.stop(); }
         if (tempTimer != null) { tempTimer.stop(); }
+        if (retryTimer != null) { retryTimer.stop(); }
+    }
+
+    // Tap on the dial: try again right away.
+    function retry() as Void {
+        retries = 0;
+        ops = [];
+        running = false;
+        status = "Connecting";
+        isError = false;
+        WatchUi.requestUpdate();
+        refresh();
+    }
+
+    // Phone-link errors are often momentary: try again a few times on our own.
+    hidden function fail(code) {
+        status = errorText(code);
+        isError = true;
+        ops = [];
+        if (code < 0 && retries < 3) {
+            retries++;
+            retryTimer.stop();
+            retryTimer.start(method(:refresh), 2500 * retries, false);
+        }
+        WatchUi.requestUpdate();
     }
 
     function prop(key) {
@@ -174,6 +203,7 @@ class AircoModel {
     function refresh() as Void {
         if (prop("hbUrl").equals("") || prop("idMain").equals("")) {
             status = "Not set up";
+            isError = true;
             WatchUi.requestUpdate();
             return;
         }
@@ -248,10 +278,13 @@ class AircoModel {
         if ((code == 200 || code == 201) && data instanceof Dictionary && data["access_token"] != null) {
             token = data["access_token"];
             pump();
-        } else {
-            status = (code == 400 || code == 401 || code == 403) ? "Login failed" : errorText(code);
+        } else if (code == 400 || code == 401) {
+            status = "Login failed";
+            isError = true;
             ops = [];
             WatchUi.requestUpdate();
+        } else {
+            fail(code);
         }
     }
 
@@ -265,6 +298,7 @@ class AircoModel {
                 return;
             }
             status = "Login failed";
+            isError = true;
             ops = [];
             WatchUi.requestUpdate();
             return;
@@ -275,14 +309,16 @@ class AircoModel {
         var ok = code == 200 || code == 201 || code == 204 || (op[:kind] == :put && code == -400);
         if (ok) {
             status = null;
+            isError = false;
+            retries = 0;
             // Ignore reads that race a change we just made; Homebridge lags a little.
             if (op[:kind] == :get && data instanceof Dictionary && System.getTimer() - lastWrite > 2500) {
                 apply(op[:id], data);
                 if (op[:id].equals(prop("idMain"))) { loaded = true; }
             }
         } else {
-            status = errorText(code);
-            if (code < 0) { ops = []; }
+            fail(code);
+            return;
         }
         WatchUi.requestUpdate();
         pump();
@@ -331,10 +367,14 @@ class AircoModel {
         return v.toNumber();
     }
 
+    // Short enough for one line on a 240px screen; the code is what tells causes apart.
     function errorText(code) {
-        if (code == -104 || code == -2) { return "Phone not connected"; }
-        if (code == -300) { return "Timed out"; }
+        if (code == -104) { return "No phone -104"; }
+        if (code == -2 || code == -3) { return "Timeout " + code; }
+        if (code == -300) { return "Server timeout"; }
+        if (code == -400) { return "Bad reply -400"; }
         if (code == -402 || code == -403) { return "Reply too big"; }
+        if (code == 403) { return "Blocked 403"; }
         if (code == 404) { return "Airco not found"; }
         return "Error " + code;
     }
