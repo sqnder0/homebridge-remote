@@ -15,8 +15,12 @@ targets:
       path: HomebridgeRemote/Info.plist
       properties:
         CFBundleDisplayName: Homebridge Remote
-        CFBundleShortVersionString: "1.1"
-        CFBundleVersion: "2"
+        CFBundleShortVersionString: "1.2"
+        CFBundleVersion: "3"
+        INAlternativeAppNames:
+          - INAlternativeAppName: Home Bridge Remote
+          - INAlternativeAppName: Homebridge
+          - INAlternativeAppName: Home Bridge
         UILaunchScreen: {}
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         NSLocalNetworkUsageDescription: Connects to your Homebridge server.

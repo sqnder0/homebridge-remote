@@ -75,7 +75,8 @@ struct SetTemperatureIntent: AppIntent {
     static let description = IntentDescription("Sets the target temperature of an air conditioner or thermostat.")
 
     @Parameter(title: "Device") var device: DeviceEntity
-    @Parameter(title: "Temperature", description: "Degrees Celsius")
+    @Parameter(title: "Temperature", description: "Degrees Celsius",
+               requestValueDialog: "To how many degrees?")
     var temperature: Int
 
     static var parameterSummary: some ParameterSummary {
@@ -96,10 +97,101 @@ struct SetTemperatureIntent: AppIntent {
     }
 }
 
+// MARK: - Fixed airco intents (phrases without a device name are more reliable for Siri)
+
+/// The airco on the home screen, or else the first one Homebridge has.
+private func mainAirco() async throws -> Accessory {
+    let all = try await HomebridgeClient.shared.accessories()
+    let saved = Set(DeviceStore.load().map(\.id))
+    if let a = all.first(where: { $0.isHeaterCooler && saved.contains($0.id) })
+        ?? all.first(where: { $0.isHeaterCooler }) {
+        return a
+    }
+    throw HBError.notFound
+}
+
+struct AircoOnIntent: AppIntent {
+    static let title: LocalizedStringResource = "Turn On Airco"
+    static let description = IntentDescription("Turns the air conditioner on.")
+
+    func perform() async throws -> some IntentResult & ProvidesDialog {
+        let a = try await mainAirco()
+        try await HomebridgeClient.shared.set(id: a.id, key: "Active", value: 1)
+        return .result(dialog: "The airco is on.")
+    }
+}
+
+struct AircoOffIntent: AppIntent {
+    static let title: LocalizedStringResource = "Turn Off Airco"
+    static let description = IntentDescription("Turns the air conditioner off.")
+
+    func perform() async throws -> some IntentResult & ProvidesDialog {
+        let a = try await mainAirco()
+        try await HomebridgeClient.shared.set(id: a.id, key: "Active", value: 0)
+        return .result(dialog: "The airco is off.")
+    }
+}
+
+struct AircoTemperatureIntent: AppIntent {
+    static let title: LocalizedStringResource = "Set Airco Temperature"
+    static let description = IntentDescription("Sets the air conditioner's target temperature.")
+
+    @Parameter(title: "Temperature", description: "Degrees Celsius",
+               requestValueDialog: "To how many degrees?")
+    var temperature: Int
+
+    func perform() async throws -> some IntentResult & ProvidesDialog {
+        let client = HomebridgeClient.shared
+        let a = try await mainAirco()
+        guard let key = a.targetKey else { throw HBError.unsupported("The airco") }
+        let range = a.ranges[key] ?? 16...30
+        let value = min(max(Double(temperature), range.lowerBound), range.upperBound)
+        if !a.isOn { try await client.set(id: a.id, key: "Active", value: 1) }
+        try await client.set(id: a.id, key: key, value: value)
+        return .result(dialog: "The airco is set to \(Int(value)) degrees.")
+    }
+}
+
 // MARK: - Siri phrases
 
 struct HomebridgeShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
+        AppShortcut(
+            intent: AircoOnIntent(),
+            phrases: [
+                "Turn on the airco in \(.applicationName)",
+                "Turn on airco in \(.applicationName)",
+                "Turn the airco on in \(.applicationName)",
+                "Turn on the air conditioner in \(.applicationName)",
+                "Turn on the airco with \(.applicationName)",
+                "\(.applicationName) airco on",
+            ],
+            shortTitle: "Airco On",
+            systemImageName: "power.circle.fill"
+        )
+        AppShortcut(
+            intent: AircoOffIntent(),
+            phrases: [
+                "Turn off the airco in \(.applicationName)",
+                "Turn off airco in \(.applicationName)",
+                "Turn the airco off in \(.applicationName)",
+                "Turn off the air conditioner in \(.applicationName)",
+                "Turn off the airco with \(.applicationName)",
+                "\(.applicationName) airco off",
+            ],
+            shortTitle: "Airco Off",
+            systemImageName: "power.circle"
+        )
+        AppShortcut(
+            intent: AircoTemperatureIntent(),
+            phrases: [
+                "Set the airco temperature in \(.applicationName)",
+                "Change the airco temperature in \(.applicationName)",
+                "Set the airco temperature with \(.applicationName)",
+            ],
+            shortTitle: "Airco Temperature",
+            systemImageName: "thermometer.medium"
+        )
         AppShortcut(
             intent: TurnOnDeviceIntent(),
             phrases: [
