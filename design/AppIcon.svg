@@ -1,63 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0B1230"/>
-      <stop offset="0.55" stop-color="#151A4A"/>
-      <stop offset="1" stop-color="#2A1457"/>
-    </linearGradient>
-    <radialGradient id="glowCyan" cx="0.25" cy="0.2" r="0.65">
-      <stop offset="0" stop-color="#38D9FF" stop-opacity="0.5"/>
-      <stop offset="1" stop-color="#38D9FF" stop-opacity="0"/>
-    </radialGradient>
-    <radialGradient id="glowPurple" cx="0.85" cy="0.92" r="0.6">
-      <stop offset="0" stop-color="#B36BFF" stop-opacity="0.45"/>
-      <stop offset="1" stop-color="#B36BFF" stop-opacity="0"/>
-    </radialGradient>
-    <linearGradient id="house" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#FFFFFF"/>
-      <stop offset="1" stop-color="#D3E4FF"/>
-    </linearGradient>
-    <linearGradient id="door" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#7DF0FF"/>
-      <stop offset="1" stop-color="#5B7CFF"/>
-    </linearGradient>
-    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="30"/>
-    </filter>
-  </defs>
-
-  <rect width="1024" height="1024" fill="url(#bg)"/>
-  <rect width="1024" height="1024" fill="url(#glowCyan)"/>
-  <rect width="1024" height="1024" fill="url(#glowPurple)"/>
-
-  <!-- house shape: rounded roof + body -->
-  <path id="h" d="M512 214
-           C 530 214 546 220 560 231
-           L 786 412
-           C 805 427 816 450 816 474
-           L 816 742
-           C 816 785 781 820 738 820
-           L 286 820
-           C 243 820 208 785 208 742
-           L 208 474
-           C 208 450 219 427 238 412
-           L 464 231
-           C 478 220 494 214 512 214 Z"
-        fill="#6FD8FF" opacity="0.35" filter="url(#soft)"/>
-  <path d="M512 214
-           C 530 214 546 220 560 231
-           L 786 412
-           C 805 427 816 450 816 474
-           L 816 742
-           C 816 785 781 820 738 820
-           L 286 820
-           C 243 820 208 785 208 742
-           L 208 474
-           C 208 450 219 427 238 412
-           L 464 231
-           C 478 220 494 214 512 214 Z"
-        fill="url(#house)"/>
-
-  <!-- glowing door -->
-  <path d="M432 820 L432 640 A80 80 0 0 1 592 640 L592 820 Z" fill="url(#door)"/>
+  <rect width="1024" height="1024" fill="#0E1018"/>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="44">
+    <path d="M232 470 L512 250 L792 470 L792 770 Q792 800 762 800 L262 800 Q232 800 232 770 Z" stroke="#FFFFFF"/>
+    <path d="M440 800 L440 640 Q440 580 512 580 Q584 580 584 640 L584 800" stroke="#4FD8FF"/>
+  </g>
 </svg>
