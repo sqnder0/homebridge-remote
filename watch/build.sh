@@ -32,7 +32,7 @@ echo "Built bin/Airco.prg"
 # Find the watch's GARMIN folder (it mounts as a USB drive).
 target=""
 for m in /run/media/"$USER"/* /media/"$USER"/* /mnt/garmin; do
-    [[ -d "$m/GARMIN/APPS" ]] && target="$m/GARMIN/APPS" && break
+    for a in APPS Apps apps; do [[ -d "$m/GARMIN/$a" ]] && target="$m/GARMIN/$a" && break 2; done
 done
 if [[ -z "$target" ]]; then
     echo "Watch not mounted. Plug it in, open it in your file manager, then run this again."
