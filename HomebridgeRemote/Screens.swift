@@ -143,12 +143,14 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Homebridge") {
+                Section {
                     TextField("https://homebridge.example.com", text: $url)
                         .keyboardType(.URL).textInputAutocapitalization(.never).autocorrectionDisabled()
                     TextField("Username", text: $user)
                         .textInputAutocapitalization(.never).autocorrectionDisabled()
                     SecureField("Password", text: $pass)
+                } header: {
+                    Text("Homebridge")
                 } footer: {
                     Text("The same address and login you use for the Homebridge web interface. Leave the username empty if Homebridge has no login.")
                 }
