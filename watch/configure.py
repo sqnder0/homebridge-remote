@@ -17,7 +17,8 @@ OUT = os.path.join(HERE, "secrets", "config.xml")
 
 
 def request(url, data=None, token=None):
-    headers = {"Content-Type": "application/json"}
+    # Cloudflare's bot protection rejects Python's default User-Agent with 403.
+    headers = {"Content-Type": "application/json", "User-Agent": "HomebridgeRemote-Watch/1.0"}
     if token:
         headers["Authorization"] = "Bearer " + token
     body = json.dumps(data).encode() if data is not None else None
