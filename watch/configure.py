@@ -27,6 +27,9 @@ def request(url, data=None, token=None):
 
 
 def main():
+    if not sys.stdin.isatty():
+        sys.exit("configure.py asks questions, so run it in a normal terminal window "
+                 "(not through Claude's '!' prefix).")
     url = input("Homebridge address (https://...): ").strip().rstrip("/")
     if "://" not in url:
         url = "https://" + url
