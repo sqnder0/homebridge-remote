@@ -10,7 +10,9 @@ struct DeviceCard: View {
     var body: some View {
         Group {
             if let acc = hub.live[saved.id] {
-                if acc.isClimate {
+                if let airco = hub.airco(for: acc.id) {
+                    AircoCard(airco: airco, name: saved.name)
+                } else if acc.isClimate {
                     ClimateCard(acc: acc, name: saved.name)
                 } else {
                     ToggleCard(acc: acc, name: saved.name)

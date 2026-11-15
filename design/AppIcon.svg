@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B1230"/>
+      <stop offset="0.55" stop-color="#151A4A"/>
+      <stop offset="1" stop-color="#2A1457"/>
+    </linearGradient>
+    <radialGradient id="glowCyan" cx="0.28" cy="0.22" r="0.65">
+      <stop offset="0" stop-color="#38D9FF" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#38D9FF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowPink" cx="0.85" cy="0.92" r="0.6">
+      <stop offset="0" stop-color="#B36BFF" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#B36BFF" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="unit" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#CFE6FF"/>
+    </linearGradient>
+    <linearGradient id="air" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#7DF0FF"/>
+      <stop offset="1" stop-color="#5B8CFF"/>
+    </linearGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+  </defs>
+
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+  <rect width="1024" height="1024" fill="url(#glowCyan)"/>
+  <rect width="1024" height="1024" fill="url(#glowPink)"/>
+
+  <!-- glow behind the unit -->
+  <rect x="190" y="250" width="644" height="250" rx="90" fill="#6FD8FF" opacity="0.35" filter="url(#soft)"/>
+
+  <!-- indoor unit -->
+  <rect x="190" y="230" width="644" height="250" rx="90" fill="url(#unit)"/>
+  <rect x="270" y="400" width="484" height="26" rx="13" fill="#1B2A5C" opacity="0.85"/>
+  <circle cx="742" cy="312" r="16" fill="#38D9FF"/>
+
+  <!-- airflow -->
+  <g fill="none" stroke="url(#air)" stroke-linecap="round" stroke-width="42">
+    <path d="M300 560 C 340 620, 300 680, 340 740"/>
+    <path d="M512 560 C 552 630, 472 700, 512 790"/>
+    <path d="M724 560 C 684 620, 724 680, 684 740"/>
+  </g>
+</svg>

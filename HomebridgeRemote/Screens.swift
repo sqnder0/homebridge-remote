@@ -6,10 +6,18 @@ struct RootView: View {
     @State private var showAdd = false
     @State private var showSettings = false
 
+    /// Background colour follows the first airco's mode.
+    private var ambient: Color {
+        for s in hub.saved {
+            if let a = hub.airco(for: s.id) { return a.isOn ? a.mode.tint : Color(red: 0.3, green: 0.4, blue: 0.9) }
+        }
+        return .blue
+    }
+
     var body: some View {
         NavigationStack {
             ZStack {
-                Backdrop()
+                Backdrop(tint: ambient)
                 ScrollView {
                     LazyVStack(spacing: 18) {
                         if let error = hub.error {
@@ -22,11 +30,21 @@ struct RootView: View {
                         if hub.saved.isEmpty {
                             EmptyState { showAdd = true }
                         } else {
-                            ForEach(hub.saved) { DeviceCard(saved: $0) }
+                            ForEach(hub.saved) { device in
+                                DeviceCard(saved: device)
+                                    .transition(.asymmetric(insertion: .scale(scale: 0.92).combined(with: .opacity),
+                                                            removal: .opacity))
+                                    .scrollTransition(.interactive) { content, phase in
+                                        content
+                                            .opacity(phase.isIdentity ? 1 : 0.7)
+                                            .scaleEffect(phase.isIdentity ? 1 : 0.97)
+                                    }
+                            }
                         }
                     }
                     .padding(.horizontal, 16)
                     .padding(.bottom, 32)
+                    .animation(.spring(response: 0.5, dampingFraction: 0.85), value: hub.saved)
                 }
                 .refreshable { await hub.refresh() }
             }
@@ -83,7 +101,9 @@ struct AddDevicesView: View {
     @Environment(\.dismiss) private var dismiss
 
     private var controllable: [Accessory] {
-        hub.discovered
+        let parts = hub.aircoMemberIDs
+        return hub.discovered
+            .filter { !parts.contains($0.id) }
             .filter { $0.powerKey != nil || $0.targetKey != nil }
             .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
     }

@@ -57,10 +57,12 @@ struct Accessory: Identifiable, Hashable {
     var targetTemp: Double? { targetKey.flatMap { values[$0] } }
     var currentTemp: Double? { values["CurrentTemperature"] }
     var isClimate: Bool { targetKey != nil }
+    var isHeaterCooler: Bool { writable.contains("TargetHeaterCoolerState") }
 
     var symbol: String {
         let k = kind.lowercased()
         if isClimate { return "air.conditioner.horizontal.fill" }
+        if k.contains("temperature") { return "thermometer.medium" }
         if k.contains("light") { return "lightbulb.fill" }
         if k.contains("fan") { return "fan.fill" }
         if k.contains("outlet") { return "powerplug.fill" }
@@ -177,7 +179,9 @@ actor HomebridgeClient {
         return a
     }
 
-    private static let intKeys: Set<String> = ["Active", "TargetHeaterCoolerState", "TargetHeatingCoolingState"]
+    private static let intKeys: Set<String> = [
+        "Active", "TargetHeaterCoolerState", "TargetHeatingCoolingState", "SwingMode", "TargetFanState",
+    ]
 
     func set(id: String, key: String, value: Double) async throws {
         let json: Any
