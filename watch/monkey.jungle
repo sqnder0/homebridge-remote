@@ -1,0 +1,4 @@
+project.manifest = manifest.xml
+# secrets/ holds your Homebridge address, login and accessory IDs.
+# It is created by configure.sh and never committed.
+base.resourcePath = resources;secrets

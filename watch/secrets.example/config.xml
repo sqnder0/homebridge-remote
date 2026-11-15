@@ -1,0 +1,12 @@
+<!-- Example only. Run ./configure.sh to create secrets/config.xml with your real values. -->
+<resources>
+    <properties>
+        <property id="hbUrl" type="string">https://homebridge.example.com</property>
+        <property id="hbUser" type="string">admin</property>
+        <property id="hbPass" type="string">password</property>
+        <property id="idMain" type="string">uniqueId of the Heater Cooler service</property>
+        <property id="idDry" type="string"></property>
+        <property id="idFanMode" type="string"></property>
+        <property id="idAutoFan" type="string"></property>
+    </properties>
+</resources>

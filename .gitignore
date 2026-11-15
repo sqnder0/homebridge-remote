@@ -5,3 +5,9 @@ DerivedData/
 Payload/
 .DS_Store
 HomebridgeRemote/Info.plist
+
+# Garmin watch app: local config with login, build output, signing key
+watch/secrets/
+watch/bin/
+*.der
+*.pem
